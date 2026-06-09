@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Mythos — Market Tracker</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --sf: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      --mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+      --bg: #000000;
+      --surface: #111111;
+      --surface-2: #1a1a1a;
+      --surface-3: #222222;
+      --border: rgba(255,255,255,0.08);
+      --border-subtle: rgba(255,255,255,0.04);
+      --text: #f5f5f7;
+      --text-2: #a1a1a6;
+      --text-3: #6e6e73;
+      --blue: #2997ff;
+      --green: #30d158;
+      --red: #ff453a;
+      --orange: #ff9f0a;
+      --purple: #bf5af2;
+      --teal: #64d2ff;
+      --radius: 16px;
+      --radius-sm: 12px;
+      --radius-xs: 8px;
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sf);
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.47;
+      letter-spacing: -0.022em;
+    }
+
+    /* ===== LAYOUT ===== */
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      padding: 80px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    section:last-of-type { border-bottom: none; }
+
+    /* ===== NAV ===== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
+      height: 48px;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: navPulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes navPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 120px 0 80px;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--orange);
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.1s forwards;
+    }
+
+    .hero-title {
+      font-size: clamp(48px, 8vw, 80px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      margin-bottom: 20px;
+      background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.2s forwards;
+    }
+
+    .hero-sub {
+      font-size: 21px;
+      font-weight: 400;
+      color: var(--text-2);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.38;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.35s forwards;
+    }
+
+    .hero-sub strong { color: var(--text); font-weight: 600; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* ===== COUNTDOWN ===== */
+    .countdown-section {
+      padding: 60px 0 80px;
+      text-align: center;
+    }
+
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.5s forwards;
+    }
+
+    .cd-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cd-value {
+      font-family: var(--sf);
+      font-size: clamp(56px, 10vw, 96px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--text);
+      min-width: 120px;
+      transition: color 0.6s var(--ease);
+    }
+
+    .cd-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .cd-colon {
+      font-size: clamp(40px, 8vw, 72px);
+      font-weight: 300;
+      color: var(--text-3);
+      padding-bottom: 32px;
+      opacity: 1;
+      animation: colonBlink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes colonBlink {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.15; }
+    }
+
+    /* ===== PROGRESS ===== */
+    .progress-wrap {
+      max-width: 600px;
+      margin: 40px auto 0;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.65s forwards;
+    }
+
+    .progress-track {
+      height: 4px;
+      background: var(--surface-2);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+      transition: width 1s var(--ease);
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-3);
+      font-weight: 500;
+    }
+
+    /* ===== GRID ===== */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 680px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .countdown { gap: 10px; }
+      .cd-value { min-width: 80px; }
+      section { padding: 60px 0; }
+      .hero { padding: 80px 0 60px; }
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid var(--border);
+      transition: background 0.4s var(--ease), border-color 0.4s var(--ease), transform 0.4s var(--ease);
+    }
+
+    .card:hover {
+      background: var(--surface-2);
+      border-color: rgba(255,255,255,0.12);
+      transform: scale(1.01);
+    }
+
+    .card-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+
+    /* ===== MARKET CARD ===== */
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .price-value {
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .price-unit {
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text-2);
+    }
+
+    .price-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .price-badge--up { background: rgba(48,209,88,0.12); color: var(--green); }
+    .price-badge--down { background: rgba(255,69,58,0.12); color: var(--red); }
+
+    .stat-rows { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-key {
+      font-size: 15px;
+      color: var(--text-2);
+      font-weight: 400;
+    }
+
+    .stat-val {
+      font-size: 15px;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    /* ===== VERDICT ===== */
+    .verdict-value {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .verdict-conf {
+      font-size: 15px;
+      color: var(--text-2);
+      margin-bottom: 16px;
+    }
+
+    .verdict-text {
+      font-size: 15px;
+      color: var(--text-2);
+      line-height: 1.52;
+      font-weight: 400;
+    }
+
+    /* ===== INTEL SECTION ===== */
+    .intel-section-title {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .intel-section-sub {
+      font-size: 17px;
+      color: var(--text-2);
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .intel-meta-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .intel-meta-bar span {
+      font-size: 13px;
+      color: var(--text-3);
+      font-weight: 500;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--surface-3);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      display: none;
+    }
+
+    .spinner.active { display: inline-block; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== INTEL ITEMS ===== */
+    .intel-list { display: flex; flex-direction: column; }
+
+    .intel-item {
+      display: flex;
+      gap: 16px;
+      padding: 20px 12px;
+      margin: 0 -12px;
+      border-radius: var(--radius-sm);
+      border-top: 1px solid var(--border-subtle);
+      animation: itemIn 0.5s var(--ease) both;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+    
+    .intel-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .intel-item:first-child {
+      border-top: none;
+    }
+
+    @keyframes itemIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .intel-icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-xs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .intel-icon--rumor { background: rgba(255,159,10,0.1); }
+    .intel-icon--data { background: rgba(41,151,255,0.1); }
+    .intel-icon--official { background: rgba(48,209,88,0.1); }
+    .intel-icon--alert { background: rgba(255,69,58,0.1); }
+
+    .intel-body { flex: 1; min-width: 0; }
+
+    .intel-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+
+    .intel-detail {
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .intel-footer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .intel-time {
+      font-size: 12px;
+      color: var(--text-3);
+      font-weight: 500;
+    }
+
+    .intel-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+
+    .intel-tag--high { background: rgba(255,69,58,0.1); color: var(--red); }
+    .intel-tag--medium { background: rgba(255,159,10,0.1); color: var(--orange); }
+    .intel-tag--low { background: rgba(110,110,115,0.15); color: var(--text-3); }
+
+    .intel-source {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      font-size: 12px;
+      color: var(--text-3);
+      line-height: 1.8;
+    }
+
+    footer a { color: var(--blue); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    .next-update {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-3);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .next-update strong { color: var(--text-2); }
+
+    /* ===== EXPIRED OVERLAY ===== */
+    .expired {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .expired.active { display: flex; }
+
+    .expired h1 {
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--red);
+    }
+
+    .expired p {
+      font-size: 19px;
+      color: var(--text-2);
+      max-width: 440px;
+      line-height: 1.5;
+    }
+
+    .expired p strong { color: var(--red); }
+
+    /* ===== UTILITY ===== */
+    .c-blue { color: var(--blue); }
+    .c-green { color: var(--green); }
+    .c-red { color: var(--red); }
+    .c-orange { color: var(--orange); }
+    .c-purple { color: var(--purple); }
+    .c-teal { color: var(--teal); }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-inner">
+      <span class="nav-brand">Mythos Tracker</span>
+      <div class="nav-status">
+        <span class="nav-dot"></span>
+        <span>Live • Auto-updating</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="page">
+    <section class="hero">
+      <p class="hero-eyebrow">Polymarket • Live Intelligence</p>
+      <h1 class="hero-title">Claude Mythos.</h1>
+      <p class="hero-sub">Will Anthropic release it by <strong>June 9?</strong><br>Tracking every signal in real time.</p>
+    </section>
+
+    <!-- Countdown -->
+    <section class="countdown-section">
+      <div class="countdown">
+        <div class="cd-unit">
+          <div class="cd-value" id="hr">--</div>
+          <div class="cd-label">Hours</div>
+        </div>
+        <div class="cd-colon">:</div>
+        <div class="cd-unit">
+          <div class="cd-value" id="mn">--</div>
+          <div class="cd-label">Minutes</div>
+        </div>
+        <div class="cd-colon">:</div>
+        <div class="cd-unit">
+          <div class="cd-value" id="sc">--</div>
+          <div class="cd-label">Seconds</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-bar" id="progBar" style="width:0%"></div>
+        </div>
+        <div class="progress-labels">
+          <span>Market opened Jun 8, 11:08 PM ET</span>
+          <span>Deadline</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Market + Verdict -->
+    <section>
+      <div class="grid-2">
+        <!-- Market -->
+        <div class="card">
+          <div class="card-label">Market Price</div>
+          <div class="price-row">
+            <span class="price-value c-green" id="priceVal">85¢</span>
+            <span class="price-unit">Yes</span>
+            <span class="price-badge price-badge--up" id="priceBadge">▲ Rising</span>
+          </div>
+          <div class="stat-rows">
+            <div class="stat-row">
+              <span class="stat-key">Total volume</span>
+              <span class="stat-val c-blue">$1,702,746</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">Anthropic website</span>
+              <span class="stat-val c-orange" id="anthroStat">No new posts</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-key">Current time (ET)</span>
+              <span class="stat-val" id="etClock">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verdict -->
+        <div class="card">
+          <div class="card-label">AI Verdict</div>
+          <div class="verdict-value c-red" id="vPred">No (~70%)</div>
+          <div class="verdict-conf" id="vConf">Confidence: Medium-High</div>
+          <div class="verdict-text" id="vText">Loading analysis...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Intel Feed -->
+    <section>
+      <h2 class="intel-section-title">Live Intelligence</h2>
+      <p class="intel-section-sub">Auto-searches the web every 5 minutes.</p>
+
+      <div class="intel-meta-bar">
+        <span>Showing latest signals</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="spinner" id="spinner"></span>
+          <span id="lastUpdate">Updating...</span>
+        </div>
+      </div>
+
+      <div class="intel-list" id="intelFeed">
+        <div style="text-align:center;padding:40px;color:var(--text-3);font-size:15px">Loading intelligence...</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="next-update">
+      Next search in <strong id="nextTimer">5:00</strong> &nbsp;•&nbsp; Searches completed: <strong id="searchCt">0</strong>
+    </div>
+    Data from <a href="https://polymarket.com/event/claude-mythos-released-by" target="_blank">Polymarket</a> &nbsp;•&nbsp;
+    Powered by Antigravity AI &nbsp;•&nbsp; ET = UTC−4
+  </footer>
+
+  <!-- Expired -->
+  <div class="expired" id="expiredOverlay">
+    <h1>Deadline passed.</h1>
+    <p>No public Claude Mythos release was announced on June 9, 2026. This market is expected to resolve <strong>No</strong>.</p>
+  </div>
+
+<script>
+// ── Countdown ──
+const TARGET = new Date(Date.UTC(2026, 5, 10, 4, 0, 0));
+const OPENED = new Date(Date.UTC(2026, 5, 9, 3, 8, 0));
+const totalDur = TARGET - OPENED;
+
+const pad = n => String(n).padStart(2, '0');
+
+function etStr(d) {
+  return d.toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+  });
+}
+
+function tickClock() {
+  const now = new Date(), diff = TARGET - now;
+  document.getElementById('etClock').textContent = etStr(now);
+
+  if (diff <= 0) {
+    ['hr','mn','sc'].forEach(id => document.getElementById(id).textContent = '00');
+    document.getElementById('expiredOverlay').classList.add('active');
+    document.getElementById('progBar').style.width = '100%';
+    return;
+  }
+
+  const s = Math.floor(diff / 1000);
+  document.getElementById('hr').textContent = pad(Math.floor(s / 3600));
+  document.getElementById('mn').textContent = pad(Math.floor((s % 3600) / 60));
+  document.getElementById('sc').textContent = pad(s % 60);
+
+  const pct = Math.min(100, Math.max(0, ((now - OPENED) / totalDur) * 100));
+  document.getElementById('progBar').style.width = pct + '%';
+}
+
+setInterval(tickClock, 1000);
+tickClock();
+
+// ── Intel ──
+const ICONS = { rumor: '⚡', data: '📊', official: '✅', alert: '🚨' };
+let nextSec = 300;
+
+function timeAgo(ts) {
+  const m = Math.floor((Date.now() - new Date(ts)) / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return m + 'm ago';
+  return Math.floor(m / 60) + 'h ago';
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function render(data) {
+  document.getElementById('anthroStat').textContent = data.anthroWebsiteStatus || '—';
+
+  // Verdict
+  const vp = document.getElementById('vPred');
+  vp.textContent = data.verdict.prediction;
+  vp.className = 'verdict-value ' + (data.verdict.prediction.toLowerCase().includes('no') ? 'c-red' : 'c-green');
+  document.getElementById('vConf').textContent = 'Confidence: ' + data.verdict.confidence;
+  document.getElementById('vText').textContent = data.verdict.reasoning;
+
+  document.getElementById('searchCt').textContent = data.searchCount || 0;
+
+  // Feed
+  const feed = document.getElementById('intelFeed');
+  feed.innerHTML = '';
+  (data.alerts || []).forEach((a, i) => {
+    const el = document.createElement('a');
+    el.className = 'intel-item';
+    el.href = a.url || '#';
+    if (a.url) el.target = '_blank';
+    el.style.animationDelay = (i * 0.06) + 's';
+    el.innerHTML = `
+      <div class="intel-icon intel-icon--${a.type}">${ICONS[a.type] || '📌'}</div>
+      <div class="intel-body">
+        <div class="intel-title">${esc(a.title)}</div>
+        <div class="intel-detail">${esc(a.detail)}</div>
+        <div class="intel-footer">
+          <span class="intel-time">${timeAgo(a.time)}</span>
+          <span class="intel-tag intel-tag--${a.severity}">${a.severity}</span>
+          <span class="intel-source">${esc(a.source)}</span>
+        </div>
+      </div>
+    `;
+    feed.appendChild(el);
+  });
+
+  document.getElementById('lastUpdate').textContent = 'Updated ' + timeAgo(data.lastUpdated);
+}
+
+async function fetchIntel() {
+  document.getElementById('spinner').classList.add('active');
+  try {
+    const r = await fetch('/intel.json');
+    if (r.ok) render(await r.json());
+  } catch (e) { console.warn(e); }
+  document.getElementById('spinner').classList.remove('active');
+}
+
+let lastPrice = null;
+async function fetchMarketPrice() {
+  try {
+    const res = await fetch('https://gamma-api.polymarket.com/events?slug=claude-mythos-released-by');
+    const data = await res.json();
+    if (!data || !data[0]) return;
+    
+    const event = data[0];
+    const targetMarket = event.markets.find(m => m.groupItemTitle === 'June 9');
+    if (targetMarket) {
+       const prices = JSON.parse(targetMarket.outcomePrices);
+       const yesPrice = Math.round(parseFloat(prices[0]) * 100);
+       
+       const pv = document.getElementById('priceVal');
+       pv.textContent = yesPrice + '¢';
+       pv.className = 'price-value ' + (yesPrice >= 50 ? 'c-green' : 'c-red');
+
+       if (lastPrice !== null && yesPrice !== lastPrice) {
+         const dir = yesPrice >= lastPrice ? 'up' : 'down';
+         const pb = document.getElementById('priceBadge');
+         pb.textContent = dir === 'up' ? '▲ Rising' : '▼ Falling';
+         pb.className = 'price-badge ' + (dir === 'up' ? 'price-badge--up' : 'price-badge--down');
+       } else if (lastPrice === null) {
+         const pb = document.getElementById('priceBadge');
+         pb.textContent = 'Live Price';
+         pb.className = 'price-badge price-badge--up';
+       }
+       lastPrice = yesPrice;
+    }
+  } catch (e) { console.warn('Polymarket fetch failed', e); }
+}
+
+function tickNext() {
+  nextSec--;
+  if (nextSec <= 0) { nextSec = 300; fetchIntel(); }
+  document.getElementById('nextTimer').textContent =
+    Math.floor(nextSec / 60) + ':' + pad(nextSec % 60);
+}
+
+setInterval(tickNext, 1000);
+setInterval(fetchMarketPrice, 10000); // Poll Polymarket every 10s
+fetchIntel();
+fetchMarketPrice();
+</script>
+</body>
+</html>

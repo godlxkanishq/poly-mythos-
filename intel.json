@@ -1,0 +1,50 @@
+{
+  "lastUpdated": "2026-06-09T16:25:00Z",
+  "marketPrice": 87,
+  "direction": "up",
+  "alerts": [
+    {
+      "time": "2026-06-09T16:25:00Z",
+      "type": "rumor",
+      "severity": "medium",
+      "title": "Leaks: Opus 4.8 release context",
+      "detail": "Reddit community noting that Anthropic just released Opus 4.8. Releasing Fable 5 so soon after Opus 4.8 seems unlikely to some traders, adding weight to a delayed launch hypothesis.",
+      "source": "Reddit Leaks",
+      "url": "https://www.reddit.com/search/?q=Claude+Mythos+Fable+leak"
+    },
+    {
+      "time": "2026-06-09T16:20:00Z",
+      "type": "rumor",
+      "severity": "medium",
+      "title": "Leaks: Confirmed safety focus",
+      "detail": "Reddit users confirm that Fable 5, unlike Mythos (which could chain zero-day exploits), has been heavily realigned for consumer safety, likely explaining the delayed rollout while they test it on Azure.",
+      "source": "Reddit Leaks",
+      "url": "https://www.reddit.com/search/?q=Claude+Mythos+Fable+leak"
+    },
+    {
+      "time": "2026-06-09T16:15:00Z",
+      "type": "rumor",
+      "severity": "high",
+      "title": "Leaks: 'Claude Fruitcake EAP' checkpoint?",
+      "detail": "Reddit users digging through Azure endpoints spotted another internal checkpoint name alongside Fable 5, designated 'Fruitcake EAP'. Suggests intense backend testing is underway.",
+      "source": "Reddit Leaks",
+      "url": "https://www.reddit.com/search/?q=Claude+Mythos+Fable+leak"
+    },
+    {
+      "time": "2026-06-09T16:05:00Z",
+      "type": "rumor",
+      "severity": "medium",
+      "title": "Pricing Leaks: 2x Opus?",
+      "detail": "Reddit community discussing leaked pricing tiers for Fable 5, suggesting it will be roughly double the cost of Claude Opus, cementing it as an ultra-premium tier.",
+      "source": "Reddit Leaks",
+      "url": "https://www.reddit.com/search/?q=Claude+Mythos+Fable+leak"
+    }
+  ],
+  "verdict": {
+    "prediction": "No (~85%)",
+    "confidence": "High",
+    "reasoning": "Despite heavy leaks on X and Reddit confirming the existence of 'Claude Fable 5' and spotted API endpoints on cloud providers, the massive $35B Apollo infrastructure deal and S-1 IPO filing mean Anthropic's PR is locked today. A release later this week (missing the June 9 Polymarket deadline) aligns better with corporate timelines."
+  },
+  "anthroWebsiteStatus": "No new posts (last: Jun 3)",
+  "searchCount": 16
+}
